@@ -1,0 +1,10 @@
+- Kolme erillistä näkymää
+- Tietoa-näkymä:
+  - tekijän nimi
+  - käyttöohjeet
+  - lisenssisetit
+- Tehtävälista
+  - crud
+  - tagit
+  - sorttaus
+  - etsiminen
