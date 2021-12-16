@@ -1,4 +1,5 @@
 import { Dialog, Menu, Transition } from '@headlessui/react';
+import { MenuAlt2Icon, XIcon } from '@heroicons/react/solid';
 import React, { Fragment, useContext, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { ITagContext, TagContext } from '../../contexts/Tag';
@@ -12,9 +13,8 @@ function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(' ');
 }
 
-export const Sidebar = (props: Props) => {
+export const Sidebar = ({ sidebarOpen, setSidebarOpen }: any): any => {
   const { tags, setTags } = useContext(TagContext) as ITagContext;
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
@@ -73,17 +73,10 @@ export const Sidebar = (props: Props) => {
                     onClick={() => setSidebarOpen(false)}
                   >
                     <span className='sr-only'>Close sidebar</span>
-                    {/* <XIcon className='h-6 w-6 text-white' aria-hidden='true' /> */}
+                    <XIcon className='h-6 w-6 text-white' aria-hidden='true' />
                   </button>
                 </div>
               </Transition.Child>
-              <div className='flex-shrink-0 flex items-center px-4'>
-                <img
-                  className='h-8 w-auto'
-                  src='https://tailwindui.com/img/logos/workflow-logo-purple-500-mark-gray-700-text.svg'
-                  alt='Workflow'
-                />
-              </div>
               <div className='mt-5 flex-1 h-0 overflow-y-auto'>
                 <nav className='px-2'>
                   <div className='mt-8'>
@@ -113,6 +106,29 @@ export const Sidebar = (props: Props) => {
                           <span className='truncate'>{tag.name}</span>
                         </button>
                       ))}
+                      <button
+                        onClick={() => {
+                          setSidebarOpen(false);
+                          setModalOpen(true);
+                        }}
+                        className='group w-full flex items-center px-3 py-2 text-sm font-medium text-gray-500 rounded-md hover:text-gray-700 hover:bg-gray-50'
+                      >
+                        <svg
+                          xmlns='http://www.w3.org/2000/svg'
+                          className='h-5 w-5'
+                          fill='none'
+                          viewBox='0 0 24 24'
+                          stroke='currentColor'
+                        >
+                          <path
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                            strokeWidth='2'
+                            d='M12 4v16m8-8H4'
+                          />
+                        </svg>
+                        <span className='ml-1'>New Tag</span>
+                      </button>
                     </div>
                   </div>
                 </nav>
@@ -126,14 +142,7 @@ export const Sidebar = (props: Props) => {
       </Transition.Root>
 
       <div className='hidden lg:flex lg:flex-col lg:w-72 lg:fixed lg:inset-y-0 lg:border-r lg:border-gray-200 lg:pt-5 lg:pb-4 lg:bg-gray-100'>
-        <div className='flex items-center flex-shrink-0 px-6'>
-          {/* <img
-            className='h-8 w-auto'
-            src='https://tailwindui.com/img/logos/workflow-logo-purple-500-mark-gray-700-text.svg'
-            alt='Workflow'
-          /> */}
-        </div>
-        {/* Sidebar component, swap this element with another sidebar if you like */}
+        <div className='flex items-center flex-shrink-0 px-6'></div>
         <div className='mt-6 h-0 flex-1 flex flex-col overflow-y-auto'>
           {/* Navigation */}
           <nav className='px-3 mt-6'>
@@ -212,6 +221,12 @@ export const Sidebar = (props: Props) => {
           </nav>
         </div>
       </div>
+      <button
+        onClick={() => setSidebarOpen(true)}
+        className='relative sm:fixed ml-4 md:ml-8 mt-8 inline-flex lg:hidden items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
+      >
+        <MenuAlt2Icon className='h-5 w-5' />
+      </button>
     </>
   );
 };

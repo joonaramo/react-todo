@@ -1,42 +1,32 @@
 import React, { FormEvent, useState } from 'react';
+import { editTask } from '../../services/task';
 import { Tag, ITask, ITaskList } from '../../types';
 import { TagSelector } from '../CreateTask/TagSelector';
 
 interface Props {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setTasks: React.Dispatch<React.SetStateAction<ITaskList[]>>;
+  setTasks: React.Dispatch<React.SetStateAction<ITask[]>>;
   task: ITask;
   idx: number;
+  id: number;
 }
 
-export const EditTask = ({ setOpen, setTasks, task, idx }: Props) => {
+export const EditTask = ({ setOpen, setTasks, task, id }: Props) => {
   const [title, setTitle] = useState(task.title);
   const [tag, setTag] = useState<Tag | null>(task.tag);
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setTasks((tasks) => {
-      const foundIdx = tasks[idx].tasks.findIndex((t) => t.id === task.id);
-      const newTasks = tasks.map((t, index) => {
-        if (index === idx) {
-          return {
-            ...t,
-            tasks: t.tasks.map((t, index) => {
-              if (index !== foundIdx) {
-                return t;
-              }
-              return {
-                id: t.id,
-                date: t.date,
-                title,
-                tag,
-              };
-            }),
-          };
-        } else {
-          return t;
-        }
-      });
-      return newTasks;
+    const data = await editTask(task.id, {
+      date: new Date(Date.now()),
+      title,
+      tag,
+    });
+    setTasks((allTasks) => {
+      const listTasks = allTasks.filter((t) => t.listId === id);
+      const index = listTasks.findIndex((t) => t.id === task.id);
+      listTasks.splice(index, 1, data);
+      const tasks = allTasks.filter((t) => t.listId !== id).concat(listTasks);
+      return tasks;
     });
     setOpen(false);
   };

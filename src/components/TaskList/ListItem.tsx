@@ -1,32 +1,25 @@
 import { Dialog } from '@headlessui/react';
 import { PencilIcon, XIcon } from '@heroicons/react/solid';
+import { format } from 'date-fns';
 import React, { useState } from 'react';
+import { deleteTask } from '../../services/task';
 import { ITask, ITaskList } from '../../types';
 import { EditTask } from '../EditTask';
 import { Modal } from '../Modal';
 
 interface Props {
   task: ITask;
-  setTasks: React.Dispatch<React.SetStateAction<ITaskList[]>>;
+  setTasks: React.Dispatch<React.SetStateAction<ITask[]>>;
   idx: number;
+  id: number;
 }
 
-export const ListItem = ({ task, setTasks, idx }: Props) => {
+export const ListItem = ({ task, setTasks, idx, id }: Props) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const removeTask = () => {
+  const removeTask = async () => {
     if (window.confirm('Do you really want to delete this task?')) {
-      setTasks((allTasks) => {
-        const tasks = allTasks.map((t, index) => {
-          if (index === idx) {
-            return {
-              ...t,
-              tasks: t.tasks.filter((t) => t.id !== task.id),
-            };
-          }
-          return t;
-        });
-        return tasks;
-      });
+      await deleteTask(task.id);
+      setTasks((tasks) => tasks.filter((t) => t.id !== task.id));
     }
   };
   return (
@@ -40,6 +33,7 @@ export const ListItem = ({ task, setTasks, idx }: Props) => {
             Edit To-Do Item
           </Dialog.Title>
           <EditTask
+            id={id}
             idx={idx}
             task={task}
             setTasks={setTasks}
@@ -47,7 +41,7 @@ export const ListItem = ({ task, setTasks, idx }: Props) => {
           />
         </>
       </Modal>
-      <div className='bg-white shadow rounded px-3 pt-3 pb-5 border border-white mt-3 cursor-move'>
+      <div className='bg-white shadow rounded px-3 pt-3 pb-5 border border-white mt-3'>
         <div className='flex justify-between'>
           <p className='text-gray-700 font-semibold font-sans tracking-wide text-sm'>
             {task.title}
@@ -65,7 +59,9 @@ export const ListItem = ({ task, setTasks, idx }: Props) => {
           </div>
         </div>
         <div className='flex mt-4 justify-between items-center'>
-          <span className='text-sm text-gray-600'>Sep 14</span>
+          <span className='text-sm text-gray-600'>
+            {format(new Date(task.date), 'MMM d · HH:mm')}
+          </span>
           <div
             className={
               task.tag?.color +

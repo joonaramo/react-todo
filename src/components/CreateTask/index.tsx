@@ -1,31 +1,42 @@
 import React, { FormEvent, useState } from 'react';
 import { ITask, ITaskList, Tag } from '../../types';
 import { TagSelector } from './TagSelector';
+import { createTask } from '../../services/task';
 
 interface Props {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setTasks: React.Dispatch<React.SetStateAction<ITaskList[]>>;
+  setTasks: React.Dispatch<React.SetStateAction<ITask[]>>;
+  tasks: ITask[];
   idx: number;
+  listId: number;
 }
 
-export const CreateTask = ({ setOpen, setTasks, idx }: Props) => {
+export const CreateTask = ({
+  setOpen,
+  setTasks,
+  idx,
+  listId,
+  tasks,
+}: Props) => {
   const [title, setTitle] = useState('');
   const [tag, setTag] = useState<Tag | null>(null);
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setTasks((allTasks) => {
-      const copy = [...allTasks];
-      copy[idx].tasks = [
-        {
-          date: '11 Sep',
-          id: Math.floor(Math.random() * (1000 - 10 + 1)) + 10,
-          title,
-          tag,
-        },
-        ...copy[idx].tasks,
-      ];
-      return copy;
+    const lastItem = tasks[tasks.length - 1];
+    let sortIdx;
+    if (lastItem) {
+      sortIdx = lastItem.sortIdx + 1;
+    } else {
+      sortIdx = 0;
+    }
+    const data = await createTask({
+      date: new Date(Date.now()),
+      title,
+      tag,
+      listId,
+      sortIdx,
     });
+    setTasks((allTasks) => [...allTasks, data]);
     setOpen(false);
   };
   return (

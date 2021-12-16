@@ -1,48 +1,55 @@
 import React, { FormEvent, useState } from 'react';
-import { createTag } from '../../services/tag';
-import { Tag } from '../../types';
-import { ColorSelector } from './ColorSelector';
+import { editList } from '../../services/list';
+import { Tag, ITask, ITaskList } from '../../types';
+import { TagSelector } from '../CreateTask/TagSelector';
 
 interface Props {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setTags: React.Dispatch<React.SetStateAction<Tag[]>>;
+  setTaskLists: React.Dispatch<React.SetStateAction<ITaskList[]>>;
+  listTitle: string;
+  listId: number;
 }
 
-export const CreateTag = ({ setOpen, setTags }: Props) => {
-  const [name, setName] = useState('');
-  const [color, setColor] = useState('');
+export const EditList = ({
+  setOpen,
+  setTaskLists,
+  listTitle,
+  listId,
+}: Props) => {
+  const [title, setTitle] = useState(listTitle);
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const data = await createTag({
-      name,
-      color: `bg-${color}`,
+    const data = await editList(listId, {
+      title,
     });
-    setTags((tags) => [...tags, data]);
+    setTaskLists((taskLists) => {
+      const copy = [...taskLists];
+      const index = copy.findIndex((l) => l.id === listId);
+      copy.splice(index, 1, data);
+      return copy;
+    });
     setOpen(false);
   };
   return (
     <form onSubmit={handleSubmit}>
       <div className='mt-2'>
         <label
-          htmlFor='name'
+          htmlFor='title'
           className='block text-sm font-medium text-gray-700'
         >
-          Name
+          Title
         </label>
         <div className='mt-1'>
           <input
             type='text'
-            name='name'
-            id='name'
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            name='title'
+            id='title'
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
             className='shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md'
             placeholder='My Task'
           />
         </div>
-      </div>
-      <div className='mt-2'>
-        <ColorSelector color={color} setColor={setColor} />
       </div>
       <div className='mt-5 sm:mt-6'>
         <button
