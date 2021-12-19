@@ -1,7 +1,7 @@
-import { Fragment, useContext, useEffect } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid';
-import { TagContext, ITagContext } from '../../contexts/Tag';
+import { Fragment, useContext } from 'react';
+import { ITagContext, TagContext } from '../../contexts/Tag';
 import { Tag } from '../../types';
 
 function classNames(...classes: any[]) {

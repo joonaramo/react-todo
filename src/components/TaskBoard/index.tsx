@@ -1,19 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import { ITaskList, ITask, Tag } from '../../types';
-import { TagSelector } from '../CreateTask/TagSelector';
-import { TaskList } from '../TaskList';
+import { Dialog } from '@headlessui/react';
 import {
   PlusIcon,
   SortAscendingIcon,
   SortDescendingIcon,
-  SaveIcon,
 } from '@heroicons/react/solid';
-import { Modal } from '../Modal';
-import { Dialog } from '@headlessui/react';
-import { CreateList } from '../CreateList';
-import { getLists } from '../../services/list';
+import React, { useEffect, useState } from 'react';
+import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import { editList, getLists } from '../../services/list';
 import { editTask, getAllTasks } from '../../services/task';
+import { ITask, ITaskList, Tag } from '../../types';
+import { CreateList } from '../CreateList';
+import { TagSelector } from '../CreateTask/TagSelector';
+import { Modal } from '../Modal';
+import { TaskList } from '../TaskList';
 
 export const TaskBoard = () => {
   const [taskLists, setTaskLists] = useState<ITaskList[]>([]);
@@ -40,22 +39,23 @@ export const TaskBoard = () => {
   }, []);
 
   useEffect(() => {
-    console.log(tag);
     // Filter and sort tasks whenever tag, search value or sorting direction is changed
-    const filtered = tasks
-      .filter((task) => {
-        // If task matches filter criteria, return true. Otherwise return false
-        if (
-          (task.tag?.id === tag?.id || tag === null) &&
-          task.title.toLowerCase().includes(searchValue.toLowerCase())
-        ) {
-          return true;
-        }
-        return false;
-      })
-      .sort((a, b) => a.sortIdx - b.sortIdx);
-    setFilteredTasks(filtered);
-  }, [tag, searchValue, tasks]);
+    const sorted = taskLists
+      .map((l) => l.order.map((o) => tasks.find((t) => t.id === o)))
+      .flat();
+
+    const filtered = sorted.filter((task) => {
+      // If task matches filter criteria, return true. Otherwise return false
+      if (
+        (task?.tag?.id === tag?.id || tag === null) &&
+        task?.title.toLowerCase().includes(searchValue.toLowerCase())
+      ) {
+        return true;
+      }
+      return false;
+    });
+    setFilteredTasks(filtered as ITask[]);
+  }, [tag, searchValue, tasks, taskLists]);
 
   const sort = (direction: 'ASC' | 'DESC') => {
     const sorted = filteredTasks.sort((a, b) =>
@@ -63,27 +63,20 @@ export const TaskBoard = () => {
         ? new Date(a.date).getTime() - new Date(b.date).getTime()
         : new Date(b.date).getTime() - new Date(a.date).getTime()
     );
+    const orders = taskLists.map((l) => {
+      const tasks = sorted.filter((t) => t.listId === l.id);
+      return tasks.map((t) => t.id);
+    });
+    const sortedLists = taskLists.map((l, idx) => {
+      editList(l.id, { order: orders[idx] });
+      return {
+        ...l,
+        order: orders[idx],
+      };
+    });
+    setTaskLists(sortedLists);
     setFilteredTasks(sorted);
     setSortDirection(direction);
-  };
-  /**
-   * Save current state to DB
-   */
-  const save = async () => {
-    let tasksToSave: ITask[] = [];
-    taskLists.forEach((list) => {
-      let listTasks = filteredTasks.filter((t) => t.listId === list.id);
-      listTasks = listTasks.map((t, idx) => {
-        return {
-          ...t,
-          sortIdx: idx,
-        };
-      });
-
-      tasksToSave = tasksToSave.concat(listTasks);
-    });
-    setTasks(tasksToSave);
-    tasksToSave.map((t) => editTask(t.id, t));
   };
 
   /**
@@ -118,11 +111,13 @@ export const TaskBoard = () => {
         source.index,
         destination.index
       );
+      const order = reordered.map((t) => t.id);
       // Combine tasks of the given list with all the other tasks
       const allTasks = filteredTasks
         .filter((task) => task.listId !== sInd)
         .concat(reordered);
       setFilteredTasks(allTasks);
+      await editList(sInd, { order });
     } else {
       const list = filteredTasks.filter((task) => task.listId === sInd);
       const taskToMove = list[source.index];
@@ -136,11 +131,37 @@ export const TaskBoard = () => {
         .filter((task) => task.listId !== dInd)
         .concat(destinationList);
 
+      setFilteredTasks(allTasks);
+
+      const taskList = taskLists.find((l) => l.id === sInd);
+      const destinationTaskList = taskLists.find((l) => l.id === dInd);
+
+      destinationTaskList?.order.splice(destination.index, 0, taskToMove.id);
+
+      setTaskLists((taskLists) => {
+        const copy = [...taskLists];
+        const taskListIndex = copy.findIndex((l) => l.id === sInd);
+        copy.splice(taskListIndex, 1, {
+          ...taskLists[taskListIndex],
+          order: taskList!.order.filter((o) => o !== taskToMove.id),
+        });
+        const destinationTaskListIndex = copy.findIndex((l) => l.id === dInd);
+        copy.splice(destinationTaskListIndex, 1, {
+          ...taskLists[destinationTaskListIndex],
+          order: destinationTaskList!.order,
+        });
+        return copy;
+      });
+
+      await editList(taskList!.id, {
+        order: taskList?.order.filter((o) => o !== taskToMove.id),
+      });
+      await editList(destinationTaskList!.id, {
+        order: destinationTaskList?.order,
+      });
       await editTask(taskToMove.id, {
         listId: dInd,
-        sortIdx: destination.index,
       });
-      setFilteredTasks(allTasks);
     }
   };
 
@@ -176,14 +197,6 @@ export const TaskBoard = () => {
             className='mr-8 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block sm:text-sm border-gray-300 rounded-md'
             placeholder='Search...'
           />
-          <button
-            onClick={() => save()}
-            type='button'
-            className='inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
-          >
-            <SaveIcon className='-ml-1 mr-2 h-5 w-5' aria-hidden='true' />
-            Save
-          </button>
         </div>
         <div className='flex w-full lg:w-1/3 justify-center mt-5 lg:mt-0'>
           <button
@@ -210,14 +223,14 @@ export const TaskBoard = () => {
       {taskLists.length > 0 ? (
         <div className='flex flex-1 overflow-x-scroll mt-8'>
           <DragDropContext onDragEnd={onDragEnd}>
-            {taskLists.map((list, idx) => (
-              <Droppable key={idx} droppableId={list.id.toString()}>
+            {taskLists.map((list) => (
+              <Droppable key={list.id} droppableId={list.id.toString()}>
                 {(provided) => (
                   <div ref={provided.innerRef} {...provided.droppableProps}>
                     <TaskList
                       id={list.id}
-                      idx={idx}
                       title={list.title}
+                      order={list.order}
                       tasks={filteredTasks}
                       setTasks={setTasks}
                       setTaskLists={setTaskLists}

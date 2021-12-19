@@ -1,31 +1,30 @@
 import { Dialog } from '@headlessui/react';
-import React, { useEffect, useState } from 'react';
-import { ITask, ITaskList } from '../../types';
-import { Modal } from '../Modal';
-import { CreateTask } from '../CreateTask';
-import { ListItem } from './ListItem';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { PencilIcon, XIcon } from '@heroicons/react/solid';
-import { EditList } from '../EditList';
-import { getTasks } from '../../services/task';
+import React, { useState } from 'react';
+import { Draggable } from 'react-beautiful-dnd';
 import { deleteList } from '../../services/list';
+import { ITask, ITaskList } from '../../types';
+import { CreateTask } from '../CreateTask';
+import { EditList } from '../EditList';
+import { Modal } from '../Modal';
+import { ListItem } from './ListItem';
 
 interface Props {
   setTaskLists: React.Dispatch<React.SetStateAction<ITaskList[]>>;
   tasks: ITask[];
   setTasks: React.Dispatch<React.SetStateAction<ITask[]>>;
   title: string;
-  idx: number;
   id: number;
+  order: number[];
 }
 
 export const TaskList = ({
   setTaskLists,
   title,
-  idx,
   id,
   tasks,
   setTasks,
+  order,
 }: Props) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -57,9 +56,8 @@ export const TaskList = ({
           ) : (
             <CreateTask
               listId={id}
-              idx={idx}
-              tasks={tasks.filter((task) => task.listId === id)}
               setTasks={setTasks}
+              setTaskLists={setTaskLists}
               setOpen={setModalOpen}
             />
           )}
@@ -119,7 +117,13 @@ export const TaskList = ({
                   {...provided.draggableProps}
                   {...provided.dragHandleProps}
                 >
-                  <ListItem id={id} idx={idx} setTasks={setTasks} task={task} />
+                  <ListItem
+                    id={id}
+                    setTaskLists={setTaskLists}
+                    setTasks={setTasks}
+                    order={order}
+                    task={task}
+                  />
                 </div>
               )}
             </Draggable>

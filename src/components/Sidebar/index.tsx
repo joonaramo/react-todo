@@ -1,19 +1,21 @@
-import { Dialog, Menu, Transition } from '@headlessui/react';
+import { Dialog, Transition } from '@headlessui/react';
 import { MenuAlt2Icon, XIcon } from '@heroicons/react/solid';
 import React, { Fragment, useContext, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { ITagContext, TagContext } from '../../contexts/Tag';
-import { Tag } from '../../types';
 import { CreateTag } from '../CreateTag';
 import { Modal } from '../Modal';
 
-interface Props {}
+interface Props {
+  sidebarOpen: boolean;
+  setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
 function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(' ');
 }
 
-export const Sidebar = ({ sidebarOpen, setSidebarOpen }: any): any => {
+export const Sidebar = ({ sidebarOpen, setSidebarOpen }: Props) => {
   const { tags, setTags } = useContext(TagContext) as ITagContext;
   const [modalOpen, setModalOpen] = useState(false);
 

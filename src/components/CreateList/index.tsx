@@ -1,6 +1,6 @@
 import React, { FormEvent, useState } from 'react';
-import { ITaskList, Tag } from '../../types';
 import { createList } from '../../services/list';
+import { ITaskList } from '../../types';
 
 interface Props {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -14,8 +14,8 @@ export const CreateList = ({ setOpen, setTasks }: Props) => {
     const data = await createList({
       title,
       tasks: [],
+      order: [],
     });
-    console.log('data', data);
     setTasks((allTasks) => [...allTasks, data]);
     setOpen(false);
   };

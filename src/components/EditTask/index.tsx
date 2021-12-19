@@ -1,13 +1,12 @@
 import React, { FormEvent, useState } from 'react';
 import { editTask } from '../../services/task';
-import { Tag, ITask, ITaskList } from '../../types';
+import { ITask, Tag } from '../../types';
 import { TagSelector } from '../CreateTask/TagSelector';
 
 interface Props {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setTasks: React.Dispatch<React.SetStateAction<ITask[]>>;
   task: ITask;
-  idx: number;
   id: number;
 }
 

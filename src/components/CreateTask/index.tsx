@@ -1,42 +1,45 @@
 import React, { FormEvent, useState } from 'react';
+import { editList } from '../../services/list';
+import { createTask } from '../../services/task';
 import { ITask, ITaskList, Tag } from '../../types';
 import { TagSelector } from './TagSelector';
-import { createTask } from '../../services/task';
 
 interface Props {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setTasks: React.Dispatch<React.SetStateAction<ITask[]>>;
-  tasks: ITask[];
-  idx: number;
+  setTaskLists: React.Dispatch<React.SetStateAction<ITaskList[]>>;
   listId: number;
 }
 
 export const CreateTask = ({
   setOpen,
   setTasks,
-  idx,
+  setTaskLists,
   listId,
-  tasks,
 }: Props) => {
   const [title, setTitle] = useState('');
   const [tag, setTag] = useState<Tag | null>(null);
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const lastItem = tasks[tasks.length - 1];
-    let sortIdx;
-    if (lastItem) {
-      sortIdx = lastItem.sortIdx + 1;
-    } else {
-      sortIdx = 0;
-    }
     const data = await createTask({
       date: new Date(Date.now()),
       title,
       tag,
       listId,
-      sortIdx,
     });
     setTasks((allTasks) => [...allTasks, data]);
+    setTaskLists((taskLists) => {
+      const copy = [...taskLists];
+      const index = copy.findIndex((l) => l.id === listId);
+      copy.splice(index, 1, {
+        ...taskLists[index],
+        order: [...taskLists[index].order, data.id],
+      });
+      editList(listId, {
+        order: [...taskLists[index].order, data.id],
+      });
+      return copy;
+    });
     setOpen(false);
   };
   return (

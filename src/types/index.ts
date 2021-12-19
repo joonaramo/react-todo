@@ -4,12 +4,12 @@ export interface ITask {
   date: Date;
   tag: Tag | null;
   listId: number;
-  sortIdx: number;
 }
 
 export interface ITaskList {
   id: number;
   title: string;
+  order: number[];
   tasks: ITask[];
 }
 

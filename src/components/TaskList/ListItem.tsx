@@ -2,6 +2,7 @@ import { Dialog } from '@headlessui/react';
 import { PencilIcon, XIcon } from '@heroicons/react/solid';
 import { format } from 'date-fns';
 import React, { useState } from 'react';
+import { editList } from '../../services/list';
 import { deleteTask } from '../../services/task';
 import { ITask, ITaskList } from '../../types';
 import { EditTask } from '../EditTask';
@@ -10,16 +11,32 @@ import { Modal } from '../Modal';
 interface Props {
   task: ITask;
   setTasks: React.Dispatch<React.SetStateAction<ITask[]>>;
-  idx: number;
+  setTaskLists: React.Dispatch<React.SetStateAction<ITaskList[]>>;
   id: number;
+  order: number[];
 }
 
-export const ListItem = ({ task, setTasks, idx, id }: Props) => {
+export const ListItem = ({
+  task,
+  setTasks,
+  setTaskLists,
+  order,
+  id,
+}: Props) => {
   const [modalOpen, setModalOpen] = useState(false);
   const removeTask = async () => {
     if (window.confirm('Do you really want to delete this task?')) {
       await deleteTask(task.id);
       setTasks((tasks) => tasks.filter((t) => t.id !== task.id));
+      const data = await editList(id, {
+        order: order.filter((o) => o !== task.id),
+      });
+      setTaskLists((taskLists) => {
+        const copy = [...taskLists];
+        const index = copy.findIndex((l) => l.id === id);
+        copy.splice(index, 1, data);
+        return copy;
+      });
     }
   };
   return (
@@ -34,7 +51,6 @@ export const ListItem = ({ task, setTasks, idx, id }: Props) => {
           </Dialog.Title>
           <EditTask
             id={id}
-            idx={idx}
             task={task}
             setTasks={setTasks}
             setOpen={setModalOpen}

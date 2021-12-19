@@ -1,7 +1,6 @@
 import React, { FormEvent, useState } from 'react';
 import { editList } from '../../services/list';
-import { Tag, ITask, ITaskList } from '../../types';
-import { TagSelector } from '../CreateTask/TagSelector';
+import { ITaskList } from '../../types';
 
 interface Props {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
