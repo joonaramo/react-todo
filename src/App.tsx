@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import './App.css';
 import { AppRoutes } from './routes';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Tag } from './types';
@@ -19,6 +18,7 @@ function App() {
     fetchTags();
   }, []);
 
+  // Use context for tags so they can be accessed from Sidebar component as well
   return (
     <TagContext.Provider value={value}>
       <Router>

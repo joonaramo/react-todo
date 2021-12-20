@@ -26,8 +26,10 @@ export const ListItem = ({
   const [modalOpen, setModalOpen] = useState(false);
   const removeTask = async () => {
     if (window.confirm('Do you really want to delete this task?')) {
+      // Delete task from API and state
       await deleteTask(task.id);
       setTasks((tasks) => tasks.filter((t) => t.id !== task.id));
+      // When deleting task, update the list order as well
       const data = await editList(id, {
         order: order.filter((o) => o !== task.id),
       });
@@ -76,7 +78,7 @@ export const ListItem = ({
         </div>
         <div className='flex mt-4 justify-between items-center'>
           <span className='text-sm text-gray-600'>
-            {format(new Date(task.date), 'MMM d · HH:mm')}
+            {format(new Date(task.date), 'MMM d yyyy · HH:mm')}
           </span>
           <div
             className={

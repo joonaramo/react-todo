@@ -5,7 +5,7 @@ import img3 from './images/instructions-3.png';
 
 export const About = () => {
   return (
-    <div className='mt-6'>
+    <>
       <h1 className='text-3xl'>About</h1>
       <p className='mt-6'>Tekijä: Joona Rämö</p>
       <p className='mt-4'>Käyttöohjeet:</p>
@@ -17,6 +17,6 @@ export const About = () => {
       <p className='my-4'>
         Sovelluksessa ei ole käytetty mitään lisenssinalaista materiaalia.
       </p>
-    </div>
+    </>
   );
 };

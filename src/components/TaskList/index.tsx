@@ -13,26 +13,24 @@ interface Props {
   setTaskLists: React.Dispatch<React.SetStateAction<ITaskList[]>>;
   tasks: ITask[];
   setTasks: React.Dispatch<React.SetStateAction<ITask[]>>;
-  title: string;
-  id: number;
-  order: number[];
+  taskList: ITaskList;
 }
 
 export const TaskList = ({
   setTaskLists,
-  title,
-  id,
+  taskList,
   tasks,
   setTasks,
-  order,
 }: Props) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState(false);
 
   const removeList = async () => {
     if (window.confirm('Do you really want to delete this list?')) {
-      await deleteList(id);
-      setTaskLists((taskLists) => taskLists.filter((t) => t.id !== id));
+      await deleteList(taskList.id);
+      setTaskLists((taskLists) =>
+        taskLists.filter((t) => t.id !== taskList.id)
+      );
     }
   };
 
@@ -48,14 +46,14 @@ export const TaskList = ({
           </Dialog.Title>
           {editing ? (
             <EditList
-              listTitle={title}
-              listId={id}
+              listTitle={taskList.title}
+              listId={taskList.id}
               setTaskLists={setTaskLists}
               setOpen={setModalOpen}
             />
           ) : (
             <CreateTask
-              listId={id}
+              listId={taskList.id}
               setTasks={setTasks}
               setTaskLists={setTaskLists}
               setOpen={setModalOpen}
@@ -65,7 +63,7 @@ export const TaskList = ({
       </Modal>
       <div className='bg-gray-100 rounded-lg px-3 py-3 column-width min-h-full mr-4'>
         <div className='flex justify-between'>
-          <h2>{title}</h2>
+          <h2>{taskList.title}</h2>
           <div>
             <button
               onClick={() => {
@@ -104,7 +102,7 @@ export const TaskList = ({
           </svg>
         </button>
         {tasks
-          .filter((task) => task.listId === id)
+          .filter((task) => task.listId === taskList.id)
           .map((task, index) => (
             <Draggable
               key={task.id}
@@ -118,10 +116,10 @@ export const TaskList = ({
                   {...provided.dragHandleProps}
                 >
                   <ListItem
-                    id={id}
+                    id={taskList.id}
                     setTaskLists={setTaskLists}
                     setTasks={setTasks}
-                    order={order}
+                    order={taskList.order}
                     task={task}
                   />
                 </div>

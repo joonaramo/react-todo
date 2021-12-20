@@ -2,6 +2,8 @@ export interface ITask {
   id: number;
   title: string;
   date: Date;
+  notificationDate?: Date;
+  notificationRead: boolean;
   tag: Tag | null;
   listId: number;
 }

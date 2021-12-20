@@ -3,6 +3,13 @@ import { createTag } from '../../services/tag';
 import { Tag } from '../../types';
 import { ColorSelector } from './ColorSelector';
 
+type Color =
+  | 'pink-500'
+  | 'purple-500'
+  | 'blue-500'
+  | 'green-500'
+  | 'yellow-500';
+
 interface Props {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setTags: React.Dispatch<React.SetStateAction<Tag[]>>;
@@ -10,7 +17,7 @@ interface Props {
 
 export const CreateTag = ({ setOpen, setTags }: Props) => {
   const [name, setName] = useState('');
-  const [color, setColor] = useState('');
+  const [color, setColor] = useState<Color>('pink-500');
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const data = await createTag({

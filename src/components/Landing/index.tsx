@@ -10,8 +10,8 @@ export const Landing = (props: Props) => {
     <>
       <div className='min-h-full'>
         <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-
-        <div className='flex flex-col min-h-screen mx-4 md:ml-8 mr-4 pt-8 lg:pl-72'>
+        <div className='flex flex-col min-h-screen mx-4 md:ml-8 mr-4 pt-8 md:pl-72'>
+          {/* Outlet renders component from react-router */}
           <Outlet />
         </div>
       </div>

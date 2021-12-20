@@ -44,7 +44,7 @@ export const TagSelector = ({
                   }
                 />
                 <span className='ml-3 block truncate'>
-                  {tag?.name || 'No tag'}
+                  {tag?.name || 'No tag selected'}
                 </span>
               </div>
               <span className='absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none'>
@@ -137,7 +137,7 @@ export const TagSelector = ({
                             'ml-3 block truncate'
                           )}
                         >
-                          No tag
+                          No tag selected
                         </span>
                       </div>
 

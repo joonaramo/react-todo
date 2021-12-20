@@ -35,7 +35,7 @@ export const Sidebar = ({ sidebarOpen, setSidebarOpen }: Props) => {
       <Transition.Root show={sidebarOpen} as={Fragment}>
         <Dialog
           as='div'
-          className='fixed inset-0 flex z-40 lg:hidden'
+          className='fixed inset-0 flex z-40 md:hidden'
           onClose={setSidebarOpen}
         >
           <Transition.Child
@@ -81,6 +81,41 @@ export const Sidebar = ({ sidebarOpen, setSidebarOpen }: Props) => {
               </Transition.Child>
               <div className='mt-5 flex-1 h-0 overflow-y-auto'>
                 <nav className='px-2'>
+                  <div className='space-y-1'>
+                    <NavLink
+                      onClick={() => setSidebarOpen(false)}
+                      to='/'
+                      className={({ isActive }) =>
+                        isActive
+                          ? 'bg-gray-200 text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md'
+                          : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50 group flex items-center px-2 py-2 text-sm font-medium rounded-md'
+                      }
+                    >
+                      Home
+                    </NavLink>
+                    <NavLink
+                      onClick={() => setSidebarOpen(false)}
+                      to='/timeline'
+                      className={({ isActive }) =>
+                        isActive
+                          ? 'bg-gray-200 text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md'
+                          : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50 group flex items-center px-2 py-2 text-sm font-medium rounded-md'
+                      }
+                    >
+                      Timeline
+                    </NavLink>
+                    <NavLink
+                      onClick={() => setSidebarOpen(false)}
+                      to='/about'
+                      className={({ isActive }) =>
+                        isActive
+                          ? 'bg-gray-200 text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md'
+                          : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50 group flex items-center px-2 py-2 text-sm font-medium rounded-md'
+                      }
+                    >
+                      About
+                    </NavLink>
+                  </div>
                   <div className='mt-8'>
                     <h3
                       className='px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider'
@@ -143,7 +178,7 @@ export const Sidebar = ({ sidebarOpen, setSidebarOpen }: Props) => {
         </Dialog>
       </Transition.Root>
 
-      <div className='hidden lg:flex lg:flex-col lg:w-72 lg:fixed lg:inset-y-0 lg:border-r lg:border-gray-200 lg:pt-5 lg:pb-4 lg:bg-gray-100'>
+      <div className='hidden md:flex md:flex-col md:w-72 md:fixed md:inset-y-0 md:border-r md:border-gray-200 md:pt-5 md:pb-4 md:bg-gray-100'>
         <div className='flex items-center flex-shrink-0 px-6'></div>
         <div className='mt-6 h-0 flex-1 flex flex-col overflow-y-auto'>
           {/* Navigation */}
@@ -158,6 +193,16 @@ export const Sidebar = ({ sidebarOpen, setSidebarOpen }: Props) => {
                 }
               >
                 Home
+              </NavLink>
+              <NavLink
+                to='/timeline'
+                className={({ isActive }) =>
+                  isActive
+                    ? 'bg-gray-200 text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md'
+                    : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50 group flex items-center px-2 py-2 text-sm font-medium rounded-md'
+                }
+              >
+                Timeline
               </NavLink>
               <NavLink
                 to='/about'
@@ -225,7 +270,7 @@ export const Sidebar = ({ sidebarOpen, setSidebarOpen }: Props) => {
       </div>
       <button
         onClick={() => setSidebarOpen(true)}
-        className='relative sm:fixed ml-4 md:ml-8 mt-8 inline-flex lg:hidden items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
+        className='relative ml-4 md:ml-8 mt-8 inline-flex md:hidden items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
       >
         <MenuAlt2Icon className='h-5 w-5' />
       </button>
