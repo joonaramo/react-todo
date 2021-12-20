@@ -15,8 +15,8 @@ export const EditTask = ({ setOpen, setTasks, task, id }: Props) => {
   const [title, setTitle] = useState(task.title);
   const [tag, setTag] = useState<Tag | null>(task.tag);
 
-  const [notificationEnabled, setNotificationEnabled] =
-    useState<boolean>(false);
+  const [notificationEnabled, setNotificationEnabled] = useState(false);
+  const [notificationDeleted, setNotificationDeleted] = useState(false);
   const [notificationDate, setNotificationDate] = useState<Date>(
     new Date(task.notificationDate || Date.now())
   );
@@ -25,14 +25,16 @@ export const EditTask = ({ setOpen, setTasks, task, id }: Props) => {
     e.preventDefault();
     let date;
     let notificationRead;
+
     // If checkbox is checked, give a notification date to a task
     if (notificationEnabled) {
       date = new Date(notificationDate);
-      notificationDate.setSeconds(0);
-    }
-    if (notificationEnabled) {
+      date.setSeconds(0);
       notificationRead = false;
+    } else if (notificationDeleted) {
+      date = null;
     }
+
     const data = await editTask(task.id, {
       date: new Date(Date.now()),
       notificationDate: date,
@@ -89,7 +91,9 @@ export const EditTask = ({ setOpen, setTasks, task, id }: Props) => {
             htmlFor='notificationEnabled'
             className='font-medium text-gray-700'
           >
-            {!!task.notificationDate ? 'Edit notification' : 'Add notification'}
+            {!!task.notificationDate && !notificationDeleted
+              ? 'Edit notification'
+              : 'Add notification'}
           </label>
         </div>
       </div>
@@ -149,6 +153,20 @@ export const EditTask = ({ setOpen, setTasks, task, id }: Props) => {
               />
             </div>
           </div>
+          {!!task.notificationDate && !notificationDeleted && (
+            <div className='mt-2'>
+              <button
+                onClick={() => {
+                  setNotificationEnabled(false);
+                  setNotificationDeleted(true);
+                }}
+                type='button'
+                className='inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-rose-600 text-base font-medium text-white hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500 sm:text-sm'
+              >
+                Delete notification
+              </button>
+            </div>
+          )}
         </>
       )}
       <div className='mt-5 sm:mt-6'>
