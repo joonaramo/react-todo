@@ -18,7 +18,7 @@ export const Timeline = ({ tasks }: Props) => {
               (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
             )
             .map((task, i) => (
-              <TimelineItem task={task} reversed={i % 2 === 0} />
+              <TimelineItem key={task.id} task={task} reversed={i % 2 === 0} />
             ))}
         </div>
       </div>
